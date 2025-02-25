@@ -1,0 +1,21 @@
+.form-row-50 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem; // Adjust spacing between fields
+}
+
+.form-row-50 > div {
+    flex: 1 1 48%; // Ensures each child takes 50% width while accounting for gap
+    min-width: 48%;
+}
+
+.form-row-33 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.form-row-33 > div {
+    flex: 1 1 30%; // Ensures each child takes approximately 33% width
+    min-width: 30%;
+}

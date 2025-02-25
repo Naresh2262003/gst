@@ -1,0 +1,31 @@
+.admin_files {
+
+    .fileinput {
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      .thumbnail {
+        box-shadow: none;
+      }
+    }
+  
+    .upload-sections {
+      display: flex;
+      flex-direction: row;
+      &>div {
+        width: 25%;
+        margin-top: 30px;
+        display: flex;
+        justify-content: flex-start;
+      }
+  
+      .submit-files {
+        display: flex;
+        justify-content: center;
+      }
+    }
+    .download-sections {
+      padding-left: 20px;
+    }
+  }

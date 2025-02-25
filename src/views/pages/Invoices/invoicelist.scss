@@ -1,0 +1,37 @@
+.merchant_list {
+    .flex-25 {
+      display: flex;
+      width: 100%;
+      padding: 10px 0;
+  
+      &>div {
+        width: 15%;
+        margin-right: 15px;
+        input {
+          width: 100%;
+  
+        }
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+      input {
+        width: 20%;
+        margin-right: 15px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  
+    .btn-approve {
+      background-color: #fb6340 !important;
+      border-color: #fb6340 !important;
+      color: #ffffff !important;
+  
+      &:hover, &:focus {
+        background-color: #fa7d5c !important;
+        border-color: #fa7d5c !important;
+      }
+    }
+  }
