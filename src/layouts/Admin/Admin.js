@@ -151,7 +151,7 @@ const Admin = (props) => {
         logo={{
           outterLink: "https://www.bankofbaroda.in/",
           text: "GSTIN",
-          imgSrc: logo,
+          imgSrc: "https://static.vecteezy.com/system/resources/previews/042/739/529/non_2x/gst-glyph-orange-circle-icon-vector.jpg",
         }}
         closeSidebar={closeSidebar}
       />

@@ -96,6 +96,7 @@ const routes = [
     icon: "tim-icons icon-paper",
     component: <AuditInvoice/>,
     layout: "/admin",
+    show: false,
   },
   
   // {

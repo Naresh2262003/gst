@@ -7,6 +7,7 @@ import "./auditinvoice.scss";
 import { config } from "config";
 import JWTManager from "../../../utils/JWTManager";
 
+
 import { Link, useLocation, useNavigate, Navigater, useParams } from "react-router-dom";
 import ReactDatetime from "react-datetime";
 import { reverseDate } from "../../../variables/utils.js";
@@ -14,7 +15,8 @@ import Select from "react-select";
 import NotificationAlert from "react-notification-alert";
 
 const MerchantList = () => {
-    const merchantListHeaders = ["Previous Invoices Numbers", "Current Invoice Number", "Next Invoice Numbers"];
+    // const merchantListHeaders = ["Previous Invoices Token IDs", "Current Invoice ID", "Next Invoices Token IDs"];
+    const merchantListHeaders = ["credit consumed" , "credit generated"  , "credit forwarded"];
 
     let { id } = useParams();
 
@@ -26,16 +28,15 @@ const MerchantList = () => {
         try {
 
             const token = JWTManager.getToken();
-            const response = await fetch(`${config.api_url}/audit/inv_2tU4UwkrhNEdW1oFHkR8c2M6lkE`, {
+            const response = await fetch(`${config.api_url}/audit/${id}`, {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
-                  "Authorization": `126546834:5`,
+                  "Authorization": `${token}`,
                 },
-                body: JSON.stringify({
-                  
-                })
             });
+
+            console.log(response);
 
             if (!response.ok) {
                 throw new Error("Failed to fetch invoices");
@@ -59,18 +60,27 @@ const MerchantList = () => {
         return <>loading</>
     }
 
-    const next = data.audit.filter(item => item.audit_type === 'TYPE_OUT');
-    const prev = data.audit.filter(item => item.audit_type === 'TYPE_IN');
+    console.log("data",data);
+
+    const next = data ? data.audit.filter(item => item.audit_type === 'TYPE_OUT'):[];
+    const prev = data ? data.audit.filter(item => item.audit_type === 'TYPE_IN'):[];
 
     console.log(next, prev);
 
     const columns = [
-        prev.map(item => item.invoice_id),
+        prev ? prev.map(item => item.token_id):[],
         [id],
-        next.map(item => item.invoice_id)
+        next ? next.map(item => item.token_id):[]
     ];
 
-    console.log("I am ",columns);
+    // const columns = [
+    //     prev ? prev.map(item => item.token_id):[],
+    //     ...[id, ...(next ? next.map(item => item.token_id) : [])],
+
+    //     next ? next.map(item => item.token_id):[]
+    // ];
+
+    console.log("I am ", columns);
     
     const maxRows = Math.max(...columns.map(col => col.length));
 
@@ -90,12 +100,6 @@ const MerchantList = () => {
                             <CardBody>
                                 <Table responsive className="list-table">
                                     <thead className="text-primary" style={{ borderBottom: "1px solid rgba(0, 0, 0, 0.1) " }}>
-                                        {/* <tr>
-                                            {merchantListHeaders.map((table_header, index) => (
-                                                <th key={index}  className="text-center" >{table_header}</th>
-                                            ))}
-                                        </tr> */}
-                                        
                                         <tr>
                                             {merchantListHeaders.map((table_header, index) => (
                                                 <th key={index}  className="text-center" >{table_header}</th>
@@ -109,10 +113,35 @@ const MerchantList = () => {
                                                     <td key={colIndex} className="text-center" style={{ fontWeight: "500", borderBottom: "none" }}>
                                                     <Link
                                                         className="text-right"
-                                                        to={`${col[rowIndex]}`}
+                                                        to={`/admin/audit/${col[rowIndex] && col[rowIndex].charAt(1) !== 'n' ? col[rowIndex].slice(5) : id}`}
                                                         style={{ color: "rgba(34, 42, 66, 0.7)" }}
                                                     >
-                                                        {col[rowIndex] || ""}
+                                                        {/* {col[rowIndex] || ""} */}
+                                                        {/* <Card>
+                                                          <CardBody className="text-center py-5">
+                                                            <code>{col[rowIndex] || ""}</code>
+                                                          </CardBody>
+                                                        </Card> */}
+                                                        <Card className="card-chart">
+                                                            <CardHeader>
+                                                                {col[rowIndex] && <Row>
+                                                                    <Col className="text-left" >
+                                                                        <h5 className="card-category">Invoice Id</h5>
+                                                                    </Col>
+                                                                </Row>}
+                                                                <Row>
+                                                                    <Col className="text-center" >
+                                                                        <CardTitle tag="h6">{col[rowIndex] || ""}</CardTitle>
+                                                                    </Col>
+                                                                </Row>
+                                                            </CardHeader>
+                                                            <Col className="text-left" >
+                                                                <h5 className="card-category">Token Id</h5>
+                                                            </Col>
+                                                            <CardBody>
+
+                                                            </CardBody>
+                                                        </Card>
                                                     </Link>
                                                     </td>
                                                 ))}
@@ -125,9 +154,6 @@ const MerchantList = () => {
                     </Col>
                 </Row>
                 {alert}
-                {/* <div className="react-notification-alert-container">
-                    <NotificationAlert ref={notificationAlertRef} />
-                </div> */}
             </div>
         </>
     );

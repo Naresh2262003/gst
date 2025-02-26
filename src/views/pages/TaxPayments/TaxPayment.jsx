@@ -29,10 +29,13 @@ const TaxPayment = () => {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    // "Authorization": `${token}`, // Ensure proper authorization format
-                    "Authorization": `126546834:5`, // Ensure proper authorization format
+                    "Authorization": `${token}`, // Ensure proper authorization format
+                    // "Authorization": `126546834:5`, // Ensure proper authorization format
                 },
             });
+
+            console.log(`${config.api_url}/dashboard`);
+            console.log(response);
 
             if (!response.ok) {
                 throw new Error("Failed to fetch invoices");
@@ -60,7 +63,7 @@ const TaxPayment = () => {
                 <Col xs="12">
                     <Card>
                         <CardHeader>
-                            <h5 className="card-category">File Uploads | Downloads</h5>
+                            <h5 className="card-category">Tax Payment</h5>
                         </CardHeader>
                         <CardBody>
                             <div className="upload-sections" style={{display:"block"}}>

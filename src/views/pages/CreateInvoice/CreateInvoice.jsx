@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
     Card,
     CardHeader,
@@ -17,6 +17,11 @@ import Select from "react-select";
 import JWTManager from "../../../utils/JWTManager";
 import "./createinvoice.scss";
 import { string } from "prop-types";
+import SweetAlert from "react-bootstrap-sweetalert";
+
+import Datetime from "react-datetime";
+
+import { config } from "config";
 
 const CreateInvoice = () => {
     const [formState, setFormState] = useState({
@@ -27,7 +32,12 @@ const CreateInvoice = () => {
         sgst: "",
         igst: "",
         total_amount: "",
+        invoice_date: "",
     });
+
+
+    
+        const [alert, setAlert] = useState(null);
 
     const { id } = useParams();
 
@@ -43,9 +53,13 @@ const CreateInvoice = () => {
         { label: "GST 22%", value: "22%" }
     ];
 
+    
+    
+      const navigate = useNavigate(); 
+
     useEffect(() => {
-        let amt = parseInt(amount)
-        let per = parseInt(gstValue)
+        let amt = parseInt(amount);
+        let per = parseInt(gstValue);
 
         console.log(JWTManager.getToken().slice(0, 2));
         console.log(buyerState.slice(0, 2));
@@ -56,8 +70,8 @@ const CreateInvoice = () => {
             igstV = (per / 100) * amt
             setFormState(prevState => ({ ...prevState, igst: igstV, cgst: 0, sgst: 0 }));
         } else {
-            cgstV = (per / 100) * amt
-            sgstV = (per / 100) * amt
+            cgstV = (per / 200) * amt
+            sgstV = (per / 200) * amt
             setFormState(prevState => ({ ...prevState, igst: 0, cgst: cgstV, sgst: sgstV }));
         }
 
@@ -79,11 +93,11 @@ const CreateInvoice = () => {
         console.log(JWTManager.getToken().slice(0, 2));
         console.log(newFormState.buyer.slice(0, 2));
 
-            if (JWTManager.getToken().slice(0, 2) !== newFormState.buyer.slice(0, 2)) {
-                setFormState(prevState => ({ ...prevState, igst: (gstValue / 100) * invoiceAmount, cgst: 0, sgst: 0 }));
-            } else {
-                setFormState(prevState => ({ ...prevState, igst: 0, cgst: (gstValue / 100) * invoiceAmount, sgst: (gstValue / 100) * invoiceAmount }));
-            }
+        if (JWTManager.getToken().slice(0, 2) !== newFormState.buyer.slice(0, 2)) {
+            setFormState(prevState => ({ ...prevState, igst: (gstValue / 100) * invoiceAmount, cgst: 0, sgst: 0 }));
+        } else {
+            setFormState(prevState => ({ ...prevState, igst: 0, cgst: (gstValue / 200) * invoiceAmount, sgst: (gstValue / 200) * invoiceAmount }));
+        }
     };
 
     const handleInputChange = (e) => {
@@ -100,31 +114,70 @@ const CreateInvoice = () => {
     }
 
     const handleSubmit = async (e) => {
+        // JWTManager.getToken();
         e.preventDefault();
         console.log("Submitting Invoice:", formState);
 
         try {
-            const response = await fetch("/invoices/create", {
+            const response = await fetch(`${config.api_url}/invoices/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `126546834:5`
+                    "Authorization": `${JWTManager.getToken()}`
                 },
-                body: JSON.stringify(formState)
+                body: JSON.stringify({
+                        "invoice_number": formState.invoice_number,
+                        "buyer": formState.buyer,
+                        "amount": formState.amount,
+                        "cgst": `${formState.cgst}`,
+                        "sgst": `${formState.sgst}`,
+                        "igst": `${formState.igst}`,
+                        "total_amount": "1100",
+                        // "invoice_date": formState.invoice_date,
+                })
             });
+
+            console.log("url",`${config.api_url}/invoices/create`);
+
+            console.log(response);
 
             if (!response.ok) {
                 throw new Error("Failed to create invoice");
             }
 
             const json = await response.json();
+
+            console.log(json);
             console.log("Invoice Created:", json);
+
+            setAlert(
+                <SweetAlert
+                    success
+                    title="Invoice Created!"
+                    onConfirm={() => setAlert(null)}
+                >
+                    Invoice created successfully.
+                </SweetAlert>
+            );
+
+            navigate("/admin/invoice");
         } catch (error) {
             console.error("Error creating invoice:", error);
+            setAlert(
+                <SweetAlert
+                    danger
+                    title="Invoice Not Created!"
+                    onConfirm={() => setAlert(null)}
+                >
+                    Invoice creation failed.
+                </SweetAlert>
+            );
         }
     };
 
     return (
+    <>
+        {alert}
         <div className="create-organization content">
             <Row>
                 <Col lg="12">
@@ -137,7 +190,7 @@ const CreateInvoice = () => {
                             <Form onSubmit={handleSubmit}>
                                 <div className="form-row-50">
                                     <div>
-                                        <label>Choose Buyer:</label>
+                                        <label>Enter Buyer GSTIN:</label>
                                         <FormGroup>
                                             <Input type="text" name="buyer" onChange={(e) => setBuyer(e.target.value)} />
                                         </FormGroup>
@@ -210,11 +263,34 @@ const CreateInvoice = () => {
                                     </div>
                                 </div>
                                 
+                                <div className="form-row-50">
                                 <div>
                                     <label>Total Amount (Incl. GST):</label>
                                     <FormGroup>
                                         <Input type="text" value={parseFloat(formState.amount) + formState.igst + formState.cgst + formState.sgst || 0} disabled />
                                     </FormGroup>
+                                </div>
+                                <div>
+                                    <label>Invoice Date:</label>
+                                    <FormGroup>
+                                            <Datetime
+                                                timeFormat={false}
+                                                inputProps={{ placeholder: "Choose Invoice Date"}}
+                                                closeOnSelect={true}
+                                                value={new Date(formState.invoice_date)}
+                                                dateFormat={"DD-MM-YYYY"}
+                                                onChange={(e) => {
+                                                    if (e && e.format) {
+                                                        console.log("Date Changed", e.format('YYYY-MM-DD'));
+                                                        setFormState((prevState) => ({
+                                                            ...prevState,
+                                                            invoice_date: e.format('YYYY-MM-DD')
+                                                        }));
+                                                    }
+                                                }}
+                                            />
+                                        </FormGroup>
+                                    </div>
                                 </div>
                                 
                                 {/* <Button color="primary" type="submit" style={{ marginTop: "20px" }} onClick={handleSubmit}>Submit</Button> */}
@@ -234,6 +310,7 @@ const CreateInvoice = () => {
                 </Col>
             </Row>
         </div>
+        </>
     );
 }
 

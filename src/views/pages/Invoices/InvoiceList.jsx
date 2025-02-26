@@ -44,11 +44,11 @@ const MerchantList = () => {
         try {
             const token = JWTManager.getToken();
             const response = await fetch(`${config.api_url}/invoices/${queryType}`, {
-                method: "POST",
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    // "Authorization": `${token}`, // Ensure proper authorization format
-                    "Authorization": `126546834:5`, // Ensure proper authorization format
+                    "Authorization": `${token}`, // Ensure proper authorization format
+                    // "Authorization": `126546834:5`, // Ensure proper authorization format
                 },
             });
 
@@ -64,14 +64,51 @@ const MerchantList = () => {
         }
     };
 
+
+    const navigate= useNavigate();
+
     const handleAuditClick = (invoiceId) => {
         console.log("Auditing invoice:", invoiceId);
         console.log("oio",invoiceId);
 
-
+        navigate(`/admin/audit/${invoiceId}`);
+        
 
         // Implement your audit logic here
     };
+
+    const handleApproveClick= async (invId) =>{
+            try {
+                const response = await fetch(`${config.api_url}/invoices/status`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `${JWTManager.getToken()}`
+                    },
+                    body: JSON.stringify({
+                        "id": `${invId}`,
+                        "status": "INVOICE_STATUS_APPROVED"
+                    })
+                });
+                // if (!response.ok) {
+                //     throw new Error('Failed to approve invoice');
+                // }
+
+                console.log(response);
+
+                if (!response.ok) {
+                    throw new Error("Failed to create invoice");
+                }
+
+                const json = await response.json();
+
+                console.log(json);
+                console.log("Invoice Created:", json);
+                window.location.reload();
+            } catch (error) {
+                console.error('Approval request failed:', error);
+            }
+    }
 
     useEffect(() => {
         fetchInvoices();
@@ -93,7 +130,8 @@ const MerchantList = () => {
                                             className="text-right"
                                             color="info"
                                             to={`new`}
-                                            style={{ height: "100px", flexDirection: "column", display: "flex", alignItems: "flex-end"}}
+                                            // style={{ height: "100px", flexDirection: "column", display: "flex", alignItems: "flex-end"}}
+                                            style={{position:"absolute", marginTop:"2px", marginLeft:"950px"}}
                                         >
                                             <Button
                                                 className="btn-simple" color="info"
@@ -103,7 +141,7 @@ const MerchantList = () => {
                                 </Col>
                             </CardHeader>
                             <CardBody>
-                            <div className="tab-group">
+                            <div className="tab-group" style={{marginTop:"50px"}}>
                                     <Button
                                         color="link"
                                         className={currentTab === 1 ? `active-tab` : ``}
@@ -127,16 +165,16 @@ const MerchantList = () => {
                                         </Button>
                                     }
                                 </div>
-                                <Table responsive className="list-table">
+                                <Table responsive className="list-table" style={{marginTop:"10px"}}>
                                     <thead className="text-primary">
                                         <tr>
                                             {merchantListHeaders.map((table_header, index) => (
-                                                <th key={index} className="text-left">{table_header}</th>
+                                                <th key={index} className="text-center">{table_header}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    {data.length === 0 ? (
+                                    {!data || data.length === 0 ? (
                                             <tr>
                                                 <td colSpan={merchantListHeaders.length} className="text-center">
                                                     No Records Found
@@ -172,20 +210,57 @@ const MerchantList = () => {
                                             //     }
                                             // </tr>
                                             // ))
+                                            // data.map((inv) => (
+                                            //     <tr key={inv.id}>
+                                            //         {[inv.id, inv.invoice_number, inv.amount, inv.cgst, inv.sgst, inv.igst, inv.buyer, inv.status].map((value, index) => (
+                                            //             <td key={index} className="text-left" style={{ width: "12.5%" }}>
+                                            //                 {typeof value === "string" && value.length > 15 ? value.slice(0, 12) + "..." : value}
+                                            //             </td>
+                                            //         ))}
+                                            //         <td className="text-left">
+                                            //             <Button color="warning" size="sm" onClick={() => handleAuditClick(inv.id)}>
+                                            //                 Audit
+                                            //             </Button>
+                                            //         </td>
+                                            //     </tr>
+                                            // ))
+
                                             data.map((inv) => (
                                                 <tr key={inv.id}>
-                                                    {[inv.id, inv.invoice_number, inv.amount, inv.cgst, inv.sgst, inv.igst, inv.buyer, inv.status].map((value, index) => (
-                                                        <td key={index} className="text-left" style={{ width: "12.5%" }}>
-                                                            {typeof value === "string" && value.length > 15 ? value.slice(0, 12) + "..." : value}
+                                                    {[inv.id, inv.invoice_number, inv.amount, inv.cgst, inv.sgst, inv.igst, inv.buyer].map((value, index) => (
+                                                        <td key={index} className="text-center" style={{ minWidth: "5%" , maxWidth:"23%"}}>
+                                                            {typeof value === "string" && value.length > 45 ? value.slice(0, 37) + "..." : value}
                                                         </td>
                                                     ))}
-                                                    <td className="text-left">
-                                                        <Button color="warning" size="sm" onClick={() => handleAuditClick(inv.id)}>
+                                                    <td className="text-center" style={{ minWidth: "8%" , maxWidth:"23%"}}>
+                                                        
+                                                        {inv.status === "INVOICE_STATUS_CREATED" ? (
+                                                            <div style={{display:"flex", flexDirection:"column" , gap:"20px" }}>
+                                                            <Button color="primary" size="sm" onClick={()=> handleApproveClick(inv.id)}  >
+                                                                Approve
+                                                            </Button>
+
+                                                            <Button color="danger" size="sm" onClick={()=> handleApproveClick(inv.id)}  >
+                                                                Reject
+                                                            </Button>
+                                                            </div >
+                                                        ):
+                                                        inv.status.slice(15)
+                                                        }
+
+                                                        
+                                                    </td>
+                                                    <td className="text-center">
+                                                    {   inv.status === "INVOICE_STATUS_TAX_PAID" && (
+                                                        <Button color="primary" size="sm" onClick={() => handleAuditClick(inv.id)} >
                                                             Audit
                                                         </Button>
-                                                    </td>
+                                                    )
+                                                    }
+                                                        </td>
                                                 </tr>
                                             ))
+                                            
                                         )}
                                     </tbody>
                                 </Table>

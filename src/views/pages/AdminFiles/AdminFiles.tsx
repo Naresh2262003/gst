@@ -82,7 +82,7 @@ const AdminFiles = () => {
                     <Col xs="12">
                         <Card>
                             <CardHeader>
-                                <h5 className="card-category">File Uploads | Downloads</h5>
+                                {/* <h5 className="card-category">File Uploads | Downloads</h5> */}
                                 <CardTitle tag="h3">
                                     {/*3,500€*/}
                                 </CardTitle>
