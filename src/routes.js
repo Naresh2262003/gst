@@ -32,11 +32,11 @@ import Login from "views/pages/Login.js";
 import Rtl from "views/pages/Rtl.js";
 import Lock from "views/pages/Lock.js";
 
-import LoyaltyProgramsList from "./views/pages/Programs/LoyaltyProgramsList.tsx";
-import MerchantList from "./views/pages/Merchants/MerchantList";
-import ValidationRules from "./views/pages/ValidationRules/ValidationRules";
-import Transactions from "./views/pages/Transactions/Transactions";
-import AdminFiles from "./views/pages/AdminFiles/AdminFiles";
+// import LoyaltyProgramsList from "./views/pages/Programs/LoyaltyProgramsList.tsx";
+// import MerchantList from "./views/pages/Merchants/MerchantList";
+// import ValidationRules from "./views/pages/ValidationRules/ValidationRules";
+// import Transactions from "./views/pages/Transactions/Transactions";
+// import AdminFiles from "./views/pages/AdminFiles/AdminFiles";
 import Invoice from "./views/pages/Invoices/InvoiceList";
 import CreateInvoice from "./views/pages/CreateInvoice/CreateInvoice.jsx";
 import TaxPayment from "./views/pages/TaxPayments/TaxPayment";
