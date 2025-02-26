@@ -106,6 +106,7 @@ const MerchantList = () => {
                                             ))}
                                         </tr>
                                     </thead>
+                                    
                                     <tbody>
                                         {Array.from({ length: maxRows }).map((_, rowIndex) => (
                                             <tr key={rowIndex}>
