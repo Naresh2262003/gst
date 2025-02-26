@@ -11,18 +11,6 @@ import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import NotificationAlert from "react-notification-alert";
 
 const MerchantList = () => {
-    // const [status, setStatus] = useState(null);
-    // const [alert, setAlert] = useState(null);
-   
-    // const notificationAlertRef = useRef(null);
-    // const [queryParams, setQueryParams] = useState({});
-
-    // const [data, setdata]= useState([]);
-    // // const { isLoading, data: Invoices, refetch } = useGetInvoicesQuery();
-    // // const [approveMerchants] = useApproveMerchantsMutation();
-    // const merchantListHeaders = ["Invoice ID", "Invoice No.", "Amount", "CGST", "SGST", "IGST", "Buyer", "Status"];
-
-    // console.log("hi",Invoices);
 
 
     const [data, setData] = useState([]);
@@ -181,35 +169,6 @@ const MerchantList = () => {
                                                 </td>
                                             </tr>
                                         ) : (
-                                            // data.map((inv) => (
-                                            //     // <tr key={inv.id}>
-                                            //     //     <td className="text-left">{inv.id}</td>
-                                            //     //     <td className="text-left">{inv.invoiceNumber}</td>
-                                            //     //     <td className="text-left">{inv.amount}</td>
-                                            //     //     <td className="text-left">{inv.cgst}</td>
-                                            //     //     <td className="text-left">{inv.sgst}</td>
-                                            //     //     <td className="text-left">{inv.igst}</td>
-                                            //     //     <td className="text-left">{inv.buyer}</td>
-                                            //     //     <td className="text-left">{inv.status}</td>
-                                            //     // </tr>
-                                            //     <tr key={inv.id}>
-                                            //     {[
-                                            //         inv.id,
-                                            //         inv.invoice_number,
-                                            //         inv.amount,
-                                            //         inv.cgst,
-                                            //         inv.sgst,
-                                            //         inv.igst,
-                                            //         inv.buyer,
-                                            //         inv.status
-                                            //     ].map((value, index) => (
-                                            //         <td key={index} className="text-left" style={{ width: "12.5%" }}>
-                                            //             {typeof value === "string" && value.length > 15 ? value.slice(0, 12) + "..." : value}
-                                            //         </td>
-                                            //     ))
-                                            //     }
-                                            // </tr>
-                                            // ))
                                             // data.map((inv) => (
                                             //     <tr key={inv.id}>
                                             //         {[inv.id, inv.invoice_number, inv.amount, inv.cgst, inv.sgst, inv.igst, inv.buyer, inv.status].map((value, index) => (
